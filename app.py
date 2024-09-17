@@ -56,5 +56,16 @@ def all_post():
     return jsonify(result)
 
 
+#rota para obter um post especifico
+@app.route("/post/<int:id>", methods=['GET'])
+def post_id(id):
+    post = User.query.get(id)
+
+    if not post:
+        return jsonify({"message": "postagem não encontrada"}), 400
+    
+    #retorno a postagem especifica baseado no id
+    return jsonify({"title": post.title, "content": post.content, "author": post.author})
+
 if __name__ == "__main__":
     app.run(debug=True)
