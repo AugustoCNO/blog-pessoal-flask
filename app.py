@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_login import current_user, login_required, login_user, logout_user, LoginManager
 from models.database import db
 from models.user import User
@@ -12,6 +12,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 db.init_app(app)
 login_manager.login_view = 'login'
+
 
 @login_manager.user_loader
 def load_user(user_id):
