@@ -1,5 +1,4 @@
-from flask import Flask, request, jsonify
-from flask_login import current_user, login_required, login_user, logout_user, LoginManager
+from flask import Flask, request, jsonify, render_template
 from models.database import db
 from models.post import Post
 
@@ -7,16 +6,8 @@ from models.post import Post
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///database.db'
 app.config["SECRET_KEY"] = 'your_secret_key'
-login_manager = LoginManager()
-
-login_manager.init_app(app)
 db.init_app(app)
-login_manager.login_view = 'login'
 
-
-@login_manager.user_loader
-def load_user(user_id):
-    return Post.query.get(user_id)
 
 # Rota para criar uma nova postagem
 @app.route("/new_post", methods=['POST'])
@@ -53,7 +44,7 @@ def all_post():
             "date_posted": post.date_posted.strftime('%Y-%m-%d %H:%M:%S')
         })
     
-    return jsonify(result)
+    return render_template('all_post.html', posts=posts)
 
 # Rota para obter um post específico
 @app.route("/post/<int:id>", methods=['GET'])
@@ -63,12 +54,7 @@ def post_id(id):
     if not post:
         return jsonify({"message": "Postagem não encontrada"}), 404
     
-    return jsonify({
-        "title": post.title,
-        "content": post.content,
-        "author": post.author,
-        "date_posted": post.date_posted.strftime('%Y-%m-%d %H:%M:%S')
-    })
+    return render_template('post.html', post=post)
 
 # Rota para editar um post específico
 @app.route("/edit_post/<int:id>", methods=['PUT'])
@@ -87,7 +73,7 @@ def edit_post(id):
         post.author = data.get("author")
 
     db.session.commit()
-    return jsonify({"message": "Postagem atualizada com sucesso!"})
+    return render_template('update.html', post=post)
 
 # Rota para deletar uma postagem
 @app.route("/delete_post/<int:id>", methods=['DELETE'])
@@ -99,7 +85,7 @@ def delete_post(id):
 
     db.session.delete(post)
     db.session.commit()
-    return jsonify({"message": "Postagem deletada com sucesso!"})
+    return render_template('delete.html', post=post)
 
 if __name__ == "__main__":
     app.run(debug=True)
