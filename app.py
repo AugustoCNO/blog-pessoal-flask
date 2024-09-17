@@ -67,5 +67,20 @@ def post_id(id):
     #retorno a postagem especifica baseado no id
     return jsonify({"title": post.title, "content": post.content, "author": post.author})
 
+
+#rota para editar um post especifico
+@app.route("/edit_post/<int:id>", methods=['PUT'])
+def edit_post(id):
+    data = request.json
+    post = User.query.get(id)
+
+    if post and data.get("title") and data.get("content") and data.get("author"):
+        post.title = data.get("title")
+        post.content = data.get("content")
+        post.author = data.get("author")
+        db.session.commit()
+        return jsonify({"message": "postagem atualizada com sucesso"})
+
+
 if __name__ == "__main__":
     app.run(debug=True)
