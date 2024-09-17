@@ -18,6 +18,21 @@ login_manager.login_view = 'login'
 def load_user(user_id):
     return User.query.get(user_id)
 
+@app.route("/new_post", methods=['POST'])
+def new_post():
+    data = request.json
+    title = data.get("title")
+    content = data.get("content")
+    author = data.get("author")
+
+
+    if not title or not content or not author:
+        return jsonify({"message": "campos obrigatorios não preenchidos"}),400
+    
+    post = User(title=title, content=content, author=author)
+    db.session.add(post)
+    db.session.commit()
+    return jsonify({"message": "nova postagem criada com sucesso"})
 
 if __name__ == "__main__":
     app.run(debug=True)
