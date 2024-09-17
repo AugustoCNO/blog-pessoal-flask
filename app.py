@@ -46,7 +46,7 @@ def all_post():
     
     return render_template('all_post.html', posts=posts)
 
-# Rota para obter um post específico
+# Rota para obter um post específico 
 @app.route("/post/<int:id>", methods=['GET'])
 def post_id(id):
     post = Post.query.get(id)
