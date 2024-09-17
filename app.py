@@ -74,12 +74,24 @@ def edit_post(id):
     data = request.json
     post = User.query.get(id)
 
+# aqui eu estou obtendo as informaçoes do json guardando no meu titulo, content e author e tambem commitando a mudança no banco de dados
     if post and data.get("title") and data.get("content") and data.get("author"):
         post.title = data.get("title")
         post.content = data.get("content")
         post.author = data.get("author")
         db.session.commit()
         return jsonify({"message": "postagem atualizada com sucesso"})
+
+
+#rota para deletar uma postagem
+@app.route("/delete_post/<int:id>", methods=['DELETE'])
+def delete_post(id):
+    post = User.query.get(id)
+
+    if post:
+        db.session.delete(post)
+        db.session.commit()
+        return jsonify({"message": "postagem deletada com sucesso"})
 
 
 if __name__ == "__main__":
