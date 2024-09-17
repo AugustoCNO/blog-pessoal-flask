@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Deletado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .delete {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            max-width: 600px;
+            margin: auto;
+            text-align: center;
+        }
+        .delete h1 {
+            color: #d9534f;
+        }
+        .meta {
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="delete">
+        <h1>Postagem Deletada</h1>
+        <p>A postagem <strong>{{ post.title }}</strong> foi deletada com sucesso.</p>
+        <p class="meta">Autor: {{ post.author }} | Data: {{ post.date_posted.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+    </div>
+</body>
+</html>

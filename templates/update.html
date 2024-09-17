@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Atualizado</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .update {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            max-width: 600px;
+            margin: auto;
+        }
+        .update h1 {
+            margin-top: 0;
+        }
+        .meta {
+            font-size: 0.9em;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="update">
+        <h1>{{ post.title }}</h1>
+        <p>A postagem foi alterada com sucesso!</p>
+        <p class="meta">{{ post.content }}</p>
+    </div>
+</body>
+</html>
