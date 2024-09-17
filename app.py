@@ -1,7 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_login import current_user, login_required, login_user, logout_user, LoginManager
 from models.database import db
-from models.user import User
+from models.post import Post
 
 
 app = Flask(__name__)
@@ -16,9 +16,9 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    return Post.query.get(user_id)
 
-#rota para criação de uma nova postagem
+# Rota para criar uma nova postagem
 @app.route("/new_post", methods=['POST'])
 def new_post():
     data = request.json
@@ -26,73 +26,80 @@ def new_post():
     content = data.get("content")
     author = data.get("author")
 
-
     if not title or not content or not author:
-        return jsonify({"message": "campos obrigatorios não preenchidos"}),400
+        return jsonify({"message": "Campos obrigatórios não preenchidos"}), 400
     
-    #salvando nova postagem e comitando no banco de dados
-    post = User(title=title, content=content, author=author)
+    # Salvando nova postagem e comitando no banco de dados
+    post = Post(title=title, content=content, author=author)
     db.session.add(post)
     db.session.commit()
-    return jsonify({"message": "nova postagem criada com sucesso"})
+    
+    return jsonify({"message": "Nova postagem criada com sucesso!"}), 201
 
-
-#rota para visualizar todas as postagens
+# Rota para visualizar todas as postagens
 @app.route("/", methods=['GET'])
 def all_post():
-    posts = User.query.all()
+    posts = Post.query.all()
     result = []
 
     if not posts:
-        return jsonify({"message": "sem novas postagem no momento"})
+        return jsonify({"message": "Sem novas postagens no momento"})
     
-    #laço de repetição para percorrer meus posts e salvar dentro de uma lista para que eu consiga visualizar todas as postagens
     for post in posts:
         result.append({
             "title": post.title,
             "content": post.content,
-            "author": post.author
+            "author": post.author,
+            "date_posted": post.date_posted.strftime('%Y-%m-%d %H:%M:%S')
         })
+    
     return jsonify(result)
 
-
-#rota para obter um post especifico
+# Rota para obter um post específico
 @app.route("/post/<int:id>", methods=['GET'])
 def post_id(id):
-    post = User.query.get(id)
+    post = Post.query.get(id)
 
     if not post:
-        return jsonify({"message": "postagem não encontrada"}), 400
+        return jsonify({"message": "Postagem não encontrada"}), 404
     
-    #retorno a postagem especifica baseado no id
-    return jsonify({"title": post.title, "content": post.content, "author": post.author})
+    return jsonify({
+        "title": post.title,
+        "content": post.content,
+        "author": post.author,
+        "date_posted": post.date_posted.strftime('%Y-%m-%d %H:%M:%S')
+    })
 
-
-#rota para editar um post especifico
+# Rota para editar um post específico
 @app.route("/edit_post/<int:id>", methods=['PUT'])
 def edit_post(id):
     data = request.json
-    post = User.query.get(id)
+    post = Post.query.get(id)
 
-# aqui eu estou obtendo as informaçoes do json guardando no meu titulo, content e author e tambem commitando a mudança no banco de dados
-    if post and data.get("title") and data.get("content") and data.get("author"):
+    if not post:
+        return jsonify({"message": "Postagem não encontrada"}), 404
+
+    if data.get("title"):
         post.title = data.get("title")
+    if data.get("content"):
         post.content = data.get("content")
+    if data.get("author"):
         post.author = data.get("author")
-        db.session.commit()
-        return jsonify({"message": "postagem atualizada com sucesso"})
 
+    db.session.commit()
+    return jsonify({"message": "Postagem atualizada com sucesso!"})
 
-#rota para deletar uma postagem
+# Rota para deletar uma postagem
 @app.route("/delete_post/<int:id>", methods=['DELETE'])
 def delete_post(id):
-    post = User.query.get(id)
+    post = Post.query.get(id)
 
-    if post:
-        db.session.delete(post)
-        db.session.commit()
-        return jsonify({"message": "postagem deletada com sucesso"})
+    if not post:
+        return jsonify({"message": "Postagem não encontrada"}), 404
 
+    db.session.delete(post)
+    db.session.commit()
+    return jsonify({"message": "Postagem deletada com sucesso!"})
 
 if __name__ == "__main__":
     app.run(debug=True)
